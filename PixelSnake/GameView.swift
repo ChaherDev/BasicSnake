@@ -81,10 +81,16 @@ struct GameView: View {
                 .onAppear {
                     let safeWidth = geometry.size.width - 20 // Ajustement pour padding
                     let safeHeight = geometry.size.height - geometry.safeAreaInsets.top - geometry.safeAreaInsets.bottom - 20
-                    
+
+                    // Calcul de la taille des cellules
                     cellSize = min(safeWidth / CGFloat(gameModel.gridWidth), safeHeight / CGFloat(gameModel.gridHeight))
-                    gameModel.startGame()
                     
+                    // Ajustement des dimensions de la grille pour correspondre parfaitement à l'écran
+                    gameModel.gridWidth = Int(safeWidth / cellSize)
+                    gameModel.gridHeight = Int(safeHeight / cellSize)
+                    
+                    gameModel.startGame()
+
                     Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true) { _ in
                         gameModel.move()
                     }
