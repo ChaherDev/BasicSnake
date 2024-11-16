@@ -14,29 +14,36 @@ class GameModel {
         var y: Int
     }
     
-    var snake: [Position] = [Position(x: 5, y: 5)]
+    var snake: [Position] = [Position(x: 10, y: 10)]
     var direction: Position = Position(x: 1, y: 0)
-    var food: Position = Position(x: 3, y: 3)
+    var food: Position?
     var score: Int = 0
-    let gridSize: Int = 10
-    var isGameOver: Bool = false  // État de fin de partie
-
+    var gridWidth: Int = 30  // Augmenté pour rendre la grille plus grande
+    var gridHeight: Int = 30 // Augmenté pour rendre la grille plus grande
+    var isGameOver = false
+    
+    func startGame() {
+        resetGame()
+        isGameOver = false
+        generateFood()
+    }
+    
     func move() {
-        guard !isGameOver else { return }  // Ne pas bouger si le jeu est terminé
-
+        guard !isGameOver else { return }
+        
         var head = snake.first!
         head.x += direction.x
         head.y += direction.y
         
-        // Vérifier si le serpent touche un côté
-        if head.x < 0 || head.x >= gridSize || head.y < 0 || head.y >= gridSize {
-            isGameOver = true  // Fin de partie
+        // Vérification des limites du jeu
+        if head.x < 0 || head.x >= gridWidth || head.y < 0 || head.y >= gridHeight || snake.contains(head) {
+            isGameOver = true
             return
         }
         
         if head == food {
             score += 1
-            food = Position(x: Int.random(in: 0..<gridSize), y: Int.random(in: 0..<gridSize))
+            generateFood()
         } else {
             snake.removeLast()
         }
@@ -51,10 +58,16 @@ class GameModel {
     }
     
     func resetGame() {
-        snake = [Position(x: 5, y: 5)]
+        snake = [Position(x: gridWidth / 2, y: gridHeight / 2)]
         direction = Position(x: 1, y: 0)
         score = 0
-        food = Position(x: 3, y: 3)
-        isGameOver = false  // Réinitialiser l'état de fin de partie
+        isGameOver = false
+        generateFood()
+    }
+    
+    private func generateFood() {
+        repeat {
+            food = Position(x: Int.random(in: 0..<gridWidth), y: Int.random(in: 0..<gridHeight))
+        } while snake.contains(food!)
     }
 }

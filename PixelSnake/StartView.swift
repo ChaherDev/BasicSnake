@@ -5,8 +5,6 @@
 //  Created by Chaher Machhour on 13/11/2024.
 //
 
-// StartView.swift
-
 import SwiftUI
 
 struct StartView: View {

@@ -5,8 +5,6 @@
 //  Created by Chaher Machhour on 12/11/2024.
 //
 
-// PixelSnakeApp.swift
-
 import SwiftUI
 
 @main

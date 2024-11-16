@@ -5,170 +5,97 @@
 //  Created by Chaher Machhour on 12/11/2024.
 //
 
-// GameView.swift
-
 import SwiftUI
-import UIKit
 
-// Vue principale du jeu
 struct GameView: View {
-    @State private var score = 0
-    @State private var direction: Direction = .right
-    @State private var snake = [CGPoint(x: 10, y: 10)]
-    @State private var gameOver = false
-
+    @State var gameModel = GameModel()
+    @State var cellSize: CGFloat = 20
+    
     var body: some View {
-        ZStack {
-            // Contexte de jeu avec un fond
-            Color.black
-                .edgesIgnoringSafeArea(.all)
-            
-            // Affichage du score
-            Text("\(score)")
-                .font(.largeTitle)
-                .foregroundColor(.white)
-                .position(x: UIScreen.main.bounds.width - 50, y: UIScreen.main.bounds.height - 50)
-
-            // Représentation du serpent
-            ForEach(snake, id: \.self) { segment in
-                Rectangle()
-                    .frame(width: 20, height: 20)
-                    .position(x: segment.x * 20, y: segment.y * 20)
-                    .foregroundColor(.green)
-            }
-
-            // Affichage de Game Over
-            if gameOver {
-                Text("Game Over")
-                    .font(.largeTitle)
-                    .foregroundColor(.red)
-            }
-        }
-        .gesture(DragGesture(minimumDistance: 0)
-                    .onChanged { value in
-                        let horizontal = value.translation.width
-                        let vertical = value.translation.height
-                        if abs(horizontal) > abs(vertical) {
-                            if horizontal > 0 {
-                                direction = .right
-                            } else {
-                                direction = .left
-                            }
-                        } else {
-                            if vertical > 0 {
-                                direction = .down
-                            } else {
-                                direction = .up
+        GeometryReader { geometry in
+            VStack {
+                Spacer(minLength: geometry.safeAreaInsets.top)
+                
+                ZStack {
+                    // Zone de jeu avec bordure
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(Color.gray, lineWidth: 2)
+                        .background(Color.black)
+                        .padding(10) // Léger padding
+                        .frame(
+                            width: geometry.size.width - 20, // Taille basée sur l'écran avec padding
+                            height: geometry.size.height - geometry.safeAreaInsets.top - geometry.safeAreaInsets.bottom - 20
+                        )
+                    
+                    // Serpent
+                    ForEach(gameModel.snake, id: \.self) { segment in
+                        Rectangle()
+                            .fill(Color.green)
+                            .frame(width: cellSize, height: cellSize)
+                            .position(x: CGFloat(segment.x) * cellSize + cellSize / 2,
+                                      y: CGFloat(segment.y) * cellSize + cellSize / 2)
+                    }
+                    
+                    // Nourriture
+                    if let food = gameModel.food {
+                        Circle()
+                            .fill(Color.red)
+                            .frame(width: cellSize, height: cellSize)
+                            .position(x: CGFloat(food.x) * cellSize + cellSize / 2,
+                                      y: CGFloat(food.y) * cellSize + cellSize / 2)
+                    }
+                    
+                    // Game Over
+                    if gameModel.isGameOver {
+                        VStack {
+                            Text("Game Over")
+                                .font(.largeTitle)
+                                .foregroundColor(.white)
+                            
+                            Text("Score: \(gameModel.score)")
+                                .font(.title2)
+                                .foregroundColor(.yellow)
+                            
+                            Button(action: {
+                                gameModel.startGame()
+                            }) {
+                                Text("Rejouer")
+                                    .font(.title2)
+                                    .padding()
+                                    .background(Capsule().fill(Color.blue))
+                                    .foregroundColor(.white)
                             }
                         }
-                    })
-        // Gérer les événements de clavier (sur macOS et iOS)
-        .background(KeyboardEventsView { direction in
-            self.direction = direction
-        })
-        .onAppear {
-            startGame()
+                    }
+                }
+                .gesture(
+                    DragGesture()
+                        .onEnded { gesture in
+                            if abs(gesture.translation.width) > abs(gesture.translation.height) {
+                                gameModel.changeDirection(to: gesture.translation.width > 0 ? GameModel.Position(x: 1, y: 0) : GameModel.Position(x: -1, y: 0))
+                            } else {
+                                gameModel.changeDirection(to: gesture.translation.height > 0 ? GameModel.Position(x: 0, y: 1) : GameModel.Position(x: 0, y: -1))
+                            }
+                        }
+                )
+                .onAppear {
+                    let safeWidth = geometry.size.width - 20 // Ajustement pour padding
+                    let safeHeight = geometry.size.height - geometry.safeAreaInsets.top - geometry.safeAreaInsets.bottom - 20
+                    
+                    cellSize = min(safeWidth / CGFloat(gameModel.gridWidth), safeHeight / CGFloat(gameModel.gridHeight))
+                    gameModel.startGame()
+                    
+                    Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true) { _ in
+                        gameModel.move()
+                    }
+                }
+                
+                Spacer(minLength: geometry.safeAreaInsets.bottom)
+            }
         }
-    }
-
-    // Fonction pour démarrer une nouvelle partie
-    func startGame() {
-        snake = [CGPoint(x: 10, y: 10)] // Position de départ du serpent
-        score = 0
-        gameOver = false
-        moveSnake()
-    }
-
-    // Fonction pour faire avancer le serpent
-    func moveSnake() {
-        guard !gameOver else { return }
-
-        // Logique de mouvement du serpent
-        var head = snake.first!
-        switch direction {
-        case .up:
-            head.y -= 1
-        case .down:
-            head.y += 1
-        case .left:
-            head.x -= 1
-        case .right:
-            head.x += 1
-        }
-
-        // Vérifier si le serpent se heurte à lui-même ou aux bords
-        if snake.contains(where: { $0 == head }) || head.x < 0 || head.y < 0 || head.x >= 20 || head.y >= 20 {
-            gameOver = true
-        } else {
-            // Ajouter un nouveau segment à la tête du serpent
-            snake.insert(head, at: 0)
-            snake.removeLast()
-
-            // Mettre à jour le score
-            score += 1
-        }
-
-        // Réessayer après une courte pause
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            moveSnake()
-        }
+        .background(Color.black)
     }
 }
-
-// Direction du serpent
-enum Direction {
-    case up, down, left, right
-}
-
-// Vue représentant les événements du clavier
-struct KeyboardEventsView: UIViewControllerRepresentable {
-    var onArrowKeyPressed: (Direction) -> Void
-
-    func makeUIViewController(context: Context) -> UIViewController {
-        let viewController = KeyboardEventsViewController()
-        viewController.onArrowKeyPressed = onArrowKeyPressed
-        return viewController
-    }
-
-    func updateUIViewController(_ uiViewController: UIViewController, context: Context) {
-        // Rien à faire ici pour ce cas spécifique
-    }
-}
-
-class KeyboardEventsViewController: UIViewController {
-    var onArrowKeyPressed: ((Direction) -> Void)?
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        // Ajout des commandes de touches pour iOS/macOS
-        let upKey = UIKeyCommand(input: UIKeyCommand.inputUpArrow, modifierFlags: [], action: #selector(handleArrowKey(_:)))
-        let downKey = UIKeyCommand(input: UIKeyCommand.inputDownArrow, modifierFlags: [], action: #selector(handleArrowKey(_:)))
-        let leftKey = UIKeyCommand(input: UIKeyCommand.inputLeftArrow, modifierFlags: [], action: #selector(handleArrowKey(_:)))
-        let rightKey = UIKeyCommand(input: UIKeyCommand.inputRightArrow, modifierFlags: [], action: #selector(handleArrowKey(_:)))
-
-        addKeyCommand(upKey)
-        addKeyCommand(downKey)
-        addKeyCommand(leftKey)
-        addKeyCommand(rightKey)
-    }
-
-    @objc func handleArrowKey(_ sender: UIKeyCommand) {
-        switch sender.input {
-        case UIKeyCommand.inputUpArrow:
-            onArrowKeyPressed?(.up)
-        case UIKeyCommand.inputDownArrow:
-            onArrowKeyPressed?(.down)
-        case UIKeyCommand.inputLeftArrow:
-            onArrowKeyPressed?(.left)
-        case UIKeyCommand.inputRightArrow:
-            onArrowKeyPressed?(.right)
-        default:
-            break
-        }
-    }
-}
-
 
 #Preview {
     GameView()
