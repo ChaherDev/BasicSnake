@@ -9,7 +9,7 @@ import Foundation
 
 @Observable
 class SnakeGame {
-    var snake: [(x: Int, y: Int)] = [(5, 5)]  // Position initiale du serpent
+    var snake: [(x: Int, y: Int)] = [(3, 5)]  // Position initiale du serpent
     var direction: (x: Int, y: Int) = (1, 0)  // Direction initiale : droite
     var food: (x: Int, y: Int) = (3, 3)  // Position initiale de la nourriture
     var score: Int = 0  // Score du joueur
@@ -41,7 +41,7 @@ class SnakeGame {
     
     // Fonction pour réinitialiser le jeu
     func resetGame() {
-        snake = [(5, 5)]  // Réinitialiser la position du serpent
+        snake = [(3, 5)]  // Réinitialiser la position du serpent
         direction = (1, 0)  // Réinitialiser la direction
         score = 0  // Réinitialiser le score
         food = (3, 3)  // Réinitialiser la position de la nourriture

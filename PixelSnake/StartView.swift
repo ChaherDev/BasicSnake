@@ -12,11 +12,6 @@ struct StartView: View {
     
     var body: some View {
         VStack {
-            Text("Welcome to PixelSnake")
-                .font(.largeTitle)
-                .fontWeight(.bold)
-                .padding()
-            
             Button(action: {
                 isGameStarted = true  // Lancer le jeu
             }) {
@@ -25,9 +20,7 @@ struct StartView: View {
                     .padding()
                     .foregroundColor(.white)
                     .background(Capsule().fill(Color.green))
-                    .shadow(radius: 10)
             }
-            .padding(.top, 20)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.black.edgesIgnoringSafeArea(.all))

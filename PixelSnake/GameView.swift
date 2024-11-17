@@ -48,19 +48,14 @@ struct GameView: View {
                     // Game Over
                     if gameModel.isGameOver {
                         VStack {
-                            Text("Game Over")
-                                .font(.largeTitle)
-                                .foregroundColor(.white)
-                            
-                            Text("Score: \(gameModel.score)")
-                                .font(.title2)
+                            Text("\(gameModel.score)")
+                                .font(.system(size: 100))
                                 .foregroundColor(.yellow)
-                            
                             Button(action: {
                                 gameModel.startGame()
                             }) {
-                                Text("Rejouer")
-                                    .font(.title2)
+                                Text("Restart")
+                                    .font(.largeTitle)
                                     .padding()
                                     .background(Capsule().fill(Color.blue))
                                     .foregroundColor(.white)
