@@ -21,10 +21,13 @@ struct GameView: View {
                     RoundedRectangle(cornerRadius: 8)
                         .stroke(Color.gray, lineWidth: 2)
                         .background(Color.black)
-                        .padding(10) // Léger padding
+                        .padding(.top, 19)
+                        .padding(.bottom, 13)
+                        .padding(.leading, 18)
+                        .padding(.trailing, 10)
                         .frame(
-                            width: geometry.size.width - 20, // Taille basée sur l'écran avec padding
-                            height: geometry.size.height - geometry.safeAreaInsets.top - geometry.safeAreaInsets.bottom - 20
+                            width: geometry.size.width - 16, // Taille basée sur l'écran avec padding
+                            height: geometry.size.height - 16 - geometry.safeAreaInsets.top - geometry.safeAreaInsets.bottom
                         )
                     
                     // Serpent

@@ -18,7 +18,7 @@ class GameModel {
     var direction: Position = Position(x: 1, y: 0)
     var food: Position?
     var score: Int = 0
-    var gridWidth: Int = 30  // Augmenté pour rendre la grille plus grande
+    var gridWidth: Int = 30 // Augmenté pour rendre la grille plus grande
     var gridHeight: Int = 30 // Augmenté pour rendre la grille plus grande
     var isGameOver = false
     
@@ -36,7 +36,7 @@ class GameModel {
         head.y += direction.y
         
         // Vérification des limites du jeu
-        if head.x < 0 || head.x >= gridWidth || head.y < 0 || head.y >= gridHeight || snake.contains(head) {
+        if head.x < 2 || head.x >= gridWidth || head.y < 2 || head.y >= gridHeight || snake.contains(head) {
             isGameOver = true
             return
         }
