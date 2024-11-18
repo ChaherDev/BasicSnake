@@ -1,6 +1,6 @@
 //
-//  PixelSnakeApp.swift
-//  PixelSnake
+//  BasicSnakeApp.swift
+//  BasicSnake
 //
 //  Created by Chaher Machhour on 12/11/2024.
 //
@@ -8,7 +8,7 @@
 import SwiftUI
 
 @main
-struct PixelSnakeApp: App {
+struct BasicSnakeApp: App {
     @State private var isGameStarted = false  // Contrôle si le jeu a démarré
     
     var body: some Scene {
