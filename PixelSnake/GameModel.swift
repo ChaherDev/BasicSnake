@@ -66,8 +66,14 @@ class GameModel {
     }
     
     private func generateFood() {
+        let minX = 1 // Position minimale à l'intérieur de la zone de jeu
+        let minY = 1 // Position minimale à l'intérieur de la zone de jeu
+        let maxX = gridWidth - 2 // Position maximale pour éviter la bordure droite
+        let maxY = gridHeight - 2 // Position maximale pour éviter la bordure basse
+        
         repeat {
-            food = Position(x: Int.random(in: 0..<gridWidth), y: Int.random(in: 0..<gridHeight))
+            food = Position(x: Int.random(in: minX...maxX), y: Int.random(in: minY...maxY))
         } while snake.contains(food!)
     }
+
 }

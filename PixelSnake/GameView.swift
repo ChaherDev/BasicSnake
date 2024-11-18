@@ -57,7 +57,7 @@ struct GameView: View {
                             Button(action: {
                                 gameModel.startGame()
                             }) {
-                                Text("Restart")
+                                Label("Restart", systemImage: "play.circle.fill")
                                     .font(.largeTitle)
                                     .padding()
                                     .background(Capsule().fill(Color.blue))
